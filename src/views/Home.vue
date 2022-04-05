@@ -1,30 +1,99 @@
 <template>
-  <div class="home container">
+  <div class="home container text-white md:pt-18">
     <!-- Header -->
-    <div class="header flex">
-      <div class="left flex flex-column">
-        <h1>Albums</h1>
-        <span>There are 3 total albums</span>
+    <div class="header flex mb-16">
+      <div class="left flex flex-col flex-1">
+        <h2 class="text-2xl font-bold">Albums</h2>
+        <span class="text-md">There are 3 total albums</span>
       </div>
-      <div class="right flex">
-        <div @click="toggleFilterMenu" class="filter flex">
-          <span
+      <div class="right flex flex-1 justify-end items-center">
+        <div
+          @click="toggleFilterMenu"
+          class="filter flex items-center relative mr-10 cursor-pointer"
+        >
+          <span class="text-sm"
             >Filter by status
             <!-- <span v-if="filteredInvoice">: {{ filteredInvoice }}</span> -->
           </span>
-          <img src="@/assets/images/icon-arrow-down.svg" alt="" />
-          <ul v-show="filterMenu" class="filter-menu">
-            <li @click="filteredAlbums">Draft</li>
-            <li @click="filteredAlbums">Pending</li>
-            <li @click="filteredAlbums">Listened</li>
-            <li @click="filteredAlbums">Clear Filter</li>
+          <img
+            class="ml-3 w-2 h-2"
+            src="@/assets/images/icon-arrow-down.svg"
+            alt=""
+          />
+          <ul
+            v-show="filterMenu"
+            class="filter-menu w-32 absolute top-5 list-none shadow-md"
+          >
+            <li
+              class="
+                cursor-pointer
+                text-sm
+                py-2.5
+                px-5
+                hover:bg-white hover:text-d_purple
+              "
+              @click="filteredAlbums"
+            >
+              Draft
+            </li>
+            <li
+              class="
+                cursor-pointer
+                text-sm
+                py-2.5
+                px-5
+                hover:bg-white hover:text-d_purple
+              "
+              @click="filteredAlbums"
+            >
+              Pending
+            </li>
+            <li
+              class="
+                cursor-pointer
+                text-sm
+                py-2.5
+                px-5
+                hover:bg-white hover:text-d_purple
+              "
+              @click="filteredAlbums"
+            >
+              Listened
+            </li>
+            <li
+              class="
+                cursor-pointer
+                text-sm
+                py-2.5
+                px-5
+                hover:bg-white hover:text-d_purple
+              "
+              @click="filteredAlbums"
+            >
+              Clear Filter
+            </li>
           </ul>
         </div>
-        <div @click="newAlbum" class="button flex">
-          <div class="inner-button flex">
-            <img src="@/assets/images/icon-plus.svg" alt="" />
+        <div @click="newAlbum" class="button flex items-center bg-l_purple">
+          <div
+            class="
+              inner-button
+              flex
+              mr-2
+              rounded-full
+              p-2
+              items-center
+              justify-center
+              bg-white
+            "
+          >
+            <img
+              class="w-2.5 h-2.5"
+              src="@/assets/images/icon-plus.svg"
+              alt=""
+            />
           </div>
-          <span>New Albums</span>
+          <span class="text-sm">New Albums</span>
         </div>
       </div>
     </div>

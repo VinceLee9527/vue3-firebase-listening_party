@@ -3,15 +3,12 @@
 @tailwind components;
 
 @tailwind utilities;
+
 .container {
   width: 100%;
   padding: 40px 10px;
   max-width: 850px;
   margin: 0 auto;
-
-  @media (min-width: 900px) {
-    padding-top: 72px;
-  }
 }
 
 .nav-link {
@@ -37,7 +34,7 @@
 
 .button {
   cursor: pointer;
-  padding: 16px 24px;
+  padding: 12px 20px;
   border-radius: 30px;
   border: none;
   font-size: 12px;

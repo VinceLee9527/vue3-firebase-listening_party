@@ -1,12 +1,26 @@
 <template>
-  <div class="bg-bc flex flex-col min-h-screen md:flex-row">
-    <div v-if="!mobile" class="app flex flex-col">
+  <div class="">
+    <div
+      v-if="!mobile"
+      class="app bg-black flex flex-col min-h-screen md:flex-row"
+    >
       <Navbar />
-      <div class="app-content flex flex-col">
+      <div class="app-content flex flex-col flex-1 relative">
         <router-view />
       </div>
     </div>
-    <div v-else class="mobile-message flex flex-col">
+    <div
+      v-else
+      class="
+        mobile-message
+        flex flex-col
+        text-white
+        justify-center
+        items-center
+        text-center
+        h-screen
+      "
+    >
       <h2>Sorry, this app is not supported on Mobile :(</h2>
     </div>
   </div>

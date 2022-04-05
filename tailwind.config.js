@@ -8,7 +8,10 @@ module.exports = {
       sans: ["Proxima Nova", ...defaultTheme.fontFamily.sans],
     },
     colors: {
-      bc: "#141625",
+      black: "#141625",
+      white: "#ffffff",
+      d_purple: "#1e2139",
+      l_purple: "#7c5dfa",
     },
     screens: {
       md: "900px",
