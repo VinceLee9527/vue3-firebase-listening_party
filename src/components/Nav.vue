@@ -3,7 +3,7 @@
     class="
       flex flex-row
       justify-center
-      z-99
+      z-50
       bg-d_purple
       md:m-h-full md:m-w-90 md:flex-col md:justify-start
     "

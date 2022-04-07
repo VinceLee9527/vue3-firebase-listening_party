@@ -74,7 +74,10 @@
             </li>
           </ul>
         </div>
-        <div @click="newAlbum" class="button flex items-center bg-l_purple">
+        <div
+          @click="newAlbum"
+          class="button flex items-center bg-l_purple cursor-pointer"
+        >
           <div
             class="
               inner-button
@@ -116,19 +119,22 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
+import { ref } from "vue";
+
 export default {
   name: "Home",
-  data() {
+  setup() {
+    // const loading = ref(false);
+    const filterMenu = ref(null);
+    const store = useStore();
+    const toggleFilterMenu = () => (filterMenu.value = !filterMenu.value);
+
     return {
-      filterMenu: null,
+      filterMenu,
+      newAlbum: () => store.commit("TOGGLE_ALBUM"),
+      toggleFilterMenu,
     };
-  },
-  components: {},
-  methods: {
-    newAlbum() {},
-    toggleFilterMenu() {
-      this.filterMenu = !this.filterMenu;
-    },
   },
 };
 </script>

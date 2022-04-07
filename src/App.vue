@@ -6,6 +6,9 @@
     >
       <Navbar />
       <div class="app-content flex flex-col flex-1 relative">
+        <transition name="album">
+          <AlbumModal v-if="albumModal" />
+        </transition>
         <router-view />
       </div>
     </div>
@@ -21,36 +24,59 @@
         h-screen
       "
     >
-      <h2>Sorry, this app is not supported on Mobile :(</h2>
+      <h2 class="text-2xl text-black">
+        Sorry, this app is not supported on Mobile :(
+      </h2>
     </div>
   </div>
 </template>
 
 <script>
 import Navbar from "./components/Nav.vue";
+import AlbumModal from "./components/AlbumModal.vue";
+
+import { useStore } from "vuex";
+import { ref, computed, onMounted } from "vue";
 
 export default {
-  data() {
+  setup() {
+    const store = useStore();
+    const mobile = ref(false);
+
+    const checkScreen = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth <= 750) {
+        mobile.value = true;
+        return;
+      }
+      mobile.value = false;
+    };
+
+    onMounted(() => {
+      window.addEventListener("resize", checkScreen);
+    });
+
     return {
-      mobile: null,
+      // access a state in computed function
+      albumModal: computed(() => store.state.albumModal),
+      mobile,
     };
   },
   components: {
     Navbar,
-  },
-  created() {
-    this.checkScreen();
-    window.addEventListener("resize", this.checkScreen);
-  },
-  methods: {
-    checkScreen() {
-      const windowWidth = window.innerWidth;
-      if (windowWidth <= 750) {
-        this.mobile = true;
-        return;
-      }
-      this.mobile = false;
-    },
+    AlbumModal,
   },
 };
 </script>
+
+<style >
+.album-enter-active,
+.album-leave-active {
+  transition: 0.5s ease all;
+}
+
+.album-enter-from,
+.album-leave-to {
+  transform: translateX(-700px);
+}
+</style>
