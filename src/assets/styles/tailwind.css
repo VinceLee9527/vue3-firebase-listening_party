@@ -50,6 +50,7 @@ input, option, select{
    border-radius: 5px;
    height: 35px;
    font-size: 14px;
+   padding-left: 5px
 }
 
 label {

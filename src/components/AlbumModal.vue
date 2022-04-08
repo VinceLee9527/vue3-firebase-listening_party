@@ -82,32 +82,32 @@
           <div class="work-items">
             <h2 class="text-md font-medium my-5 text-l_purple">Ratings</h2>
             <table class="item-list">
-              <tr class="table-heading flex">
-                <th class="item-name">Reviewer</th>
+              <tr class="table-heading flex mb-2">
+                <th class="item-name mr-52">Reviewer</th>
                 <th class="qty">Rating</th>
               </tr>
               <tr
-                class="table-items flex"
-                v-for="(item, index) in invoiceItemList"
+                class="table-items flex justify-between"
+                v-for="(rating, index) in albumRatingList"
                 :key="index"
               >
-                <td class="item-name">
-                  <input type="text" v-model="item.itemName" />
+                <td class="mr-5">
+                  <input class="w-64" type="text" v-model="rating.reviewer" />
                 </td>
-                <td class="qty"><input type="text" v-model="item.qty" /></td>
-                <td class="price">
-                  <input type="text" v-model="item.price" />
+                <td>
+                  <input class="w-14" type="text" v-model="rating.rating" />
                 </td>
                 <img
-                  @click="deleteInvoiceItem(item.id)"
+                  @click="deleteRating(rating.id)"
                   src="@/assets/images/icon-delete.svg"
                   alt=""
+                  class="w-5 h-7 ml-4 mt-1 cursor-pointer"
                 />
               </tr>
             </table>
 
             <div
-              @click="addNewInvoiceItem"
+              @click="addRating"
               class="
                 flex
                 button
@@ -183,6 +183,7 @@
 <script>
 import { useStore } from "vuex";
 import { ref } from "vue";
+import { uid } from "uid";
 
 export default {
   name: "albumModal",
@@ -194,10 +195,23 @@ export default {
     const genre = ref(null);
     const invoicePending = ref(null);
     const invoiceDraft = ref(null);
-    const invoiceItemList = ref([]);
+    const albumRatingList = ref([]);
     const invoiceTotal = ref(0);
 
     const store = useStore();
+    const addRating = () => {
+      albumRatingList.value.push({
+        id: uid(),
+        reviewer: "",
+        rating: 0,
+      });
+    };
+
+    const deleteRating = (id) => {
+      albumRatingList.value = albumRatingList.value.filter(
+        (rating) => rating.id !== id
+      );
+    };
 
     return {
       albumName,
@@ -206,9 +220,11 @@ export default {
       genre,
       invoicePending,
       invoiceDraft,
-      invoiceItemList,
+      albumRatingList,
       invoiceTotal,
       closeAlbum: () => store.commit("TOGGLE_ALBUM"),
+      addRating,
+      deleteRating,
     };
   },
 };
