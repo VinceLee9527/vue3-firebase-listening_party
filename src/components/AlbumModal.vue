@@ -184,6 +184,8 @@
 import { useStore } from "vuex";
 import { ref } from "vue";
 import { uid } from "uid";
+import albumsColRef from "../firebase/firebaseInit";
+import { addDoc } from "firebase/firestore";
 
 export default {
   name: "albumModal",
@@ -193,10 +195,10 @@ export default {
     const artistName = ref(null);
     const releaseDate = ref(null);
     const genre = ref(null);
-    const invoicePending = ref(null);
-    const invoiceDraft = ref(null);
+    const albumPending = ref(null);
+    const albumDraft = ref(null);
     const albumRatingList = ref([]);
-    const invoiceTotal = ref(0);
+    const ratingTotal = ref(0);
 
     const store = useStore();
     const addRating = () => {
@@ -213,18 +215,51 @@ export default {
       );
     };
 
+    const calcRatingTotal = () => {
+      ratingTotal.value = 0;
+      ratingTotal.value =
+        albumRatingList.value.reduce((total, next) => total + next.rating, 0) /
+        albumRatingList.value.length;
+    };
+
+    const uploadAlbum = async () => {
+      if (albumRatingList.value.length <= 0) {
+        alert("Please fill out rating");
+        return;
+      }
+      calcRatingTotal();
+
+      const addedDoc = await addDoc(albumsColRef, {
+        albumName: albumName.value,
+        artistName: artistName.value,
+        releaseDate: releaseDate.value,
+        genre: genre.value,
+        albumPending: albumPending.value,
+        albumDraft: albumDraft.value,
+        albumRatingList: albumRatingList.value,
+        ratingTotal: ratingTotal.value,
+      });
+      console.log(addedDoc);
+      store.commit("TOGGLE_ALBUM");
+    };
+
     return {
       albumName,
       artistName,
       releaseDate,
       genre,
-      invoicePending,
-      invoiceDraft,
+      albumPending,
+      albumDraft,
       albumRatingList,
-      invoiceTotal,
-      closeAlbum: () => store.commit("TOGGLE_ALBUM"),
+      ratingTotal,
+      uploadAlbum,
+      calcRatingTotal,
       addRating,
       deleteRating,
+      closeAlbum: () => store.commit("TOGGLE_ALBUM"),
+      publishAlbum: () => (albumPending.value = true),
+      saveDraft: () => (albumDraft.value = true),
+      submitForm: () => uploadAlbum(),
     };
   },
 };
