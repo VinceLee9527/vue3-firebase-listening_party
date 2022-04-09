@@ -18,9 +18,9 @@
       @submit.prevent="submitForm"
       class="relative p-14 max-w-2xl w-full bg-black"
     >
-      <!-- <Loading v-show="loading" />
+      <Loading v-show="loading" />
       <h1 v-if="!editInvoice" class="text-2xl font-bold mb-8">New Album</h1>
-      <h1 v-else>Edit Album</h1> -->
+      <!-- <h1 v-else>Edit Album</h1> -->
 
       <!-- Bill From -->
       <div class="album-modal">
@@ -186,11 +186,13 @@ import { ref } from "vue";
 import { uid } from "uid";
 import albumsColRef from "../firebase/firebaseInit";
 import { addDoc } from "firebase/firestore";
+import Loading from "./Loading.vue";
 
 export default {
   name: "albumModal",
+  components: { Loading },
   setup() {
-    // const loading = ref(false);
+    const loading = ref(true);
     const albumName = ref(null);
     const artistName = ref(null);
     const releaseDate = ref(null);
@@ -218,8 +220,10 @@ export default {
     const calcRatingTotal = () => {
       ratingTotal.value = 0;
       ratingTotal.value =
-        albumRatingList.value.reduce((total, next) => total + next.rating, 0) /
-        albumRatingList.value.length;
+        albumRatingList.value.reduce(
+          (total, next) => total + Number(next.rating),
+          0
+        ) / albumRatingList.value.length;
     };
 
     const uploadAlbum = async () => {
@@ -244,6 +248,7 @@ export default {
     };
 
     return {
+      loading,
       albumName,
       artistName,
       releaseDate,
