@@ -1,0 +1,39 @@
+<template>
+  <div
+    class="
+      loading
+      flex
+      justify-center
+      items-center
+      absolute
+      top-0
+      left-0
+      h-full
+      w-full
+      opacity-50
+      bg-black
+      z-[101]
+    "
+  >
+    <span
+      class="
+        block
+        w-16
+        h-16
+        my-0
+        mx-auto
+        rounded-full
+        animate-spin
+        spin
+        absolute
+        left-52
+      "
+    ></span>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "loading",
+};
+</script>

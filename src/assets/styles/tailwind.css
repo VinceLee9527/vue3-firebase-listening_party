@@ -42,6 +42,12 @@
   color: #fff;
 }
 
+.spin {
+    border: solid transparent;
+    border-top-color: #fff;
+    border-bottom-color: #fff;
+  }
+
 input, option, select{
    background-color: #1e2139;
    border:0px;

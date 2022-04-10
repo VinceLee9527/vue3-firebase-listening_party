@@ -6,6 +6,7 @@
     >
       <Navbar />
       <div class="app-content flex flex-col flex-1 relative">
+        <Modal v-if="modalActive" />
         <transition name="album">
           <AlbumModal v-if="albumModal" />
         </transition>
@@ -34,7 +35,7 @@
 <script>
 import Navbar from "./components/Nav.vue";
 import AlbumModal from "./components/AlbumModal.vue";
-
+import Modal from "../src/components/Modal.vue";
 import { useStore } from "vuex";
 import { ref, computed, onMounted } from "vue";
 
@@ -59,12 +60,14 @@ export default {
     return {
       // access a state in computed function
       albumModal: computed(() => store.state.albumModal),
+      modalActive: computed(() => store.state.modalActive),
       mobile,
     };
   },
   components: {
     Navbar,
     AlbumModal,
+    Modal,
   },
 };
 </script>

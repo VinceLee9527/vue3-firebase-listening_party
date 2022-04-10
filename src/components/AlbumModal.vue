@@ -18,9 +18,9 @@
       @submit.prevent="submitForm"
       class="relative p-14 max-w-2xl w-full bg-black"
     >
-      <!-- <Loading v-show="loading" />
+      <Loading v-show="loading" />
       <h1 v-if="!editInvoice" class="text-2xl font-bold mb-8">New Album</h1>
-      <h1 v-else>Edit Album</h1> -->
+      <!-- <h1 v-else>Edit Album</h1> -->
 
       <!-- Bill From -->
       <div class="album-modal">
@@ -186,11 +186,13 @@ import { ref } from "vue";
 import { uid } from "uid";
 import albumsColRef from "../firebase/firebaseInit";
 import { addDoc } from "firebase/firestore";
+import Loading from "./Loading.vue";
 
 export default {
   name: "albumModal",
+  components: { Loading },
   setup() {
-    // const loading = ref(false);
+    const loading = ref(false);
     const albumName = ref(null);
     const artistName = ref(null);
     const releaseDate = ref(null);
@@ -199,6 +201,7 @@ export default {
     const albumDraft = ref(null);
     const albumRatingList = ref([]);
     const ratingTotal = ref(0);
+    const albumWrap = ref(null);
 
     const store = useStore();
     const addRating = () => {
@@ -218,8 +221,16 @@ export default {
     const calcRatingTotal = () => {
       ratingTotal.value = 0;
       ratingTotal.value =
-        albumRatingList.value.reduce((total, next) => total + next.rating, 0) /
-        albumRatingList.value.length;
+        albumRatingList.value.reduce(
+          (total, next) => total + Number(next.rating),
+          0
+        ) / albumRatingList.value.length;
+    };
+
+    const checkClick = (e) => {
+      if (e.target === albumWrap.value) {
+        store.commit("TOGGLE_MODAL");
+      }
     };
 
     const uploadAlbum = async () => {
@@ -227,6 +238,7 @@ export default {
         alert("Please fill out rating");
         return;
       }
+      loading.value = true;
       calcRatingTotal();
 
       const addedDoc = await addDoc(albumsColRef, {
@@ -240,10 +252,12 @@ export default {
         ratingTotal: ratingTotal.value,
       });
       console.log(addedDoc);
+      loading.value = false;
       store.commit("TOGGLE_ALBUM");
     };
 
     return {
+      loading,
       albumName,
       artistName,
       releaseDate,
@@ -256,6 +270,8 @@ export default {
       calcRatingTotal,
       addRating,
       deleteRating,
+      checkClick,
+      albumWrap,
       closeAlbum: () => store.commit("TOGGLE_ALBUM"),
       publishAlbum: () => (albumPending.value = true),
       saveDraft: () => (albumDraft.value = true),
