@@ -242,6 +242,7 @@ export default {
       calcRatingTotal();
 
       const addedDoc = await addDoc(albumsColRef, {
+        albumId: uid(6),
         albumName: albumName.value,
         artistName: artistName.value,
         releaseDate: releaseDate.value,

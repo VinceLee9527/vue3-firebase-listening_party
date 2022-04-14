@@ -37,7 +37,10 @@ import Navbar from "./components/Nav.vue";
 import AlbumModal from "./components/AlbumModal.vue";
 import Modal from "../src/components/Modal.vue";
 import { useStore } from "vuex";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeMount } from "vue";
+
+// import albumsColRef from "../src/firebase/firebaseInit";
+// import { getDocs } from "firebase/firestore";
 
 export default {
   setup() {
@@ -57,8 +60,11 @@ export default {
       window.addEventListener("resize", checkScreen);
     });
 
+    onBeforeMount(() => {
+      store.dispatch("GET_ALBUMS");
+    });
+
     return {
-      // access a state in computed function
       albumModal: computed(() => store.state.albumModal),
       modalActive: computed(() => store.state.modalActive),
       mobile,
