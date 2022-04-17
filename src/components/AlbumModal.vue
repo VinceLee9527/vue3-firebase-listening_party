@@ -199,6 +199,7 @@ export default {
     const genre = ref(null);
     const albumPending = ref(null);
     const albumDraft = ref(null);
+    const albumDone = ref(null);
     const albumRatingList = ref([]);
     const ratingTotal = ref(0);
     const albumWrap = ref(null);
@@ -249,6 +250,7 @@ export default {
         genre: genre.value,
         albumPending: albumPending.value,
         albumDraft: albumDraft.value,
+        albumDone: albumDone.value,
         albumRatingList: albumRatingList.value,
         ratingTotal: ratingTotal.value,
       });
@@ -265,6 +267,7 @@ export default {
       genre,
       albumPending,
       albumDraft,
+      albumDone,
       albumRatingList,
       ratingTotal,
       uploadAlbum,

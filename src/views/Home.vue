@@ -101,39 +101,72 @@
       </div>
     </div>
     <!-- Invoices -->
-    <!-- <div v-if="invoiceData.length > 0">
-      <Invoice
-        v-for="(invoice, index) in filteredData"
-        :invoice="invoice"
+    <div v-if="albumData.length > 0">
+      <Album
+        v-for="(album, index) in filteredData"
+        :album="album"
         :key="index"
       />
     </div>
-    <div v-else class="empty flex flex-column">
-      <img src="@/assets/illustration-empty.svg" alt="" />
+    <div v-else class="empty flex flex-col">
+      <img src="@/assets/images/illustration-empty.svg" alt="" />
       <h3>There is nothing here</h3>
       <p>
         Create a new invoice by clicking the New Invoice button and get started
       </p>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import Album from "../components/Album.vue";
 
 export default {
   name: "Home",
+  components: {
+    Album,
+  },
   setup() {
     // const loading = ref(false);
     const filterMenu = ref(null);
+    const filteredAlbum = ref(null);
     const store = useStore();
-    const toggleFilterMenu = () => (filterMenu.value = !filterMenu.value);
+    const albumData = computed(() => store.getters.albumData);
+    // const albumData = reactive({ albumDataRef });
+
+    const filteredAlbums = (e) => {
+      if (e.target.innerText === "Clear Filter") {
+        filteredAlbum.value = null;
+        return;
+      }
+      filteredAlbum.value = e.target.innerText;
+    };
+
+    const filteredData = computed(() => {
+      return albumData.value.filter((album) => {
+        if (filteredAlbum.value === "Draft") {
+          return album.albumDraft === true;
+        }
+        if (filteredAlbum.value === "Pending") {
+          return album.albumPending === true;
+        }
+        if (filteredAlbum.value === "Listened") {
+          return album.albumDone === true;
+        }
+        return album;
+      });
+    });
 
     return {
       filterMenu,
+      filteredAlbum,
+      filteredAlbums,
+      filteredData,
       newAlbum: () => store.commit("TOGGLE_ALBUM"),
-      toggleFilterMenu,
+      albumData,
+      toggleFilterMenu: () => (filterMenu.value = !filterMenu.value),
     };
   },
 };
