@@ -4,7 +4,9 @@
     <div class="header flex mb-16">
       <div class="left flex flex-col flex-1">
         <h2 class="text-2xl font-bold">Albums</h2>
-        <span class="text-md">There are 3 total albums</span>
+        <span class="text-md"
+          >There are {{ albumData.length }} total albums</span
+        >
       </div>
       <div class="right flex flex-1 justify-end items-center">
         <div
@@ -100,7 +102,7 @@
         </div>
       </div>
     </div>
-    <!-- Invoices -->
+    <!-- Albums -->
     <div v-if="albumData.length > 0">
       <Album
         v-for="(album, index) in filteredData"
@@ -108,11 +110,16 @@
         :key="index"
       />
     </div>
-    <div v-else class="empty flex flex-col">
-      <img src="@/assets/images/illustration-empty.svg" alt="" />
-      <h3>There is nothing here</h3>
-      <p>
-        Create a new invoice by clicking the New Invoice button and get started
+    <div v-else class="flex flex-col">
+      <img
+        class="h-3/12 w-3/12 mx-auto my-12"
+        src="@/assets/images/illustration-empty.svg"
+        alt=""
+      />
+      <h3 class="text-2xl font-bold mx-auto my-8">There is nothing here</h3>
+      <p class="text-xl mx-auto">
+        Create a new album entry by clicking the New Album button and get
+        started
       </p>
     </div>
   </div>

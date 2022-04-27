@@ -1,16 +1,21 @@
 import { createStore } from "vuex";
 import { getDocs } from "firebase/firestore";
-import albumsColRef from "../firebase/firebaseInit";
+import { albumsColRef } from "../firebase/firebaseInit";
 
 export default createStore({
   state: {
     albumData: [],
     albumModal: null,
     modalActive: null,
+    currentAlbumArray: null,
   },
   getters: {
     albumData(state) {
       return state.albumData;
+    },
+    currentAlbum(state) {
+      console.log("retrived");
+      return state.currentAlbumArray;
     },
   },
   mutations: {
@@ -22,6 +27,13 @@ export default createStore({
     },
     SET_ALBUM_DATA(state, payload) {
       state.albumData.push(payload);
+      console.log("set");
+    },
+    SET_CURRENT_ALBUM(state, payload) {
+      console.log("filter");
+      state.currentAlbumArray = state.albumData.filter((album) => {
+        return album.albumId === payload;
+      });
     },
   },
   actions: {
@@ -41,10 +53,15 @@ export default createStore({
             albumDone: doc.data().albumDone,
             albumRatingList: doc.data().albumRatingList,
             ratingTotal: doc.data().ratingTotal,
+            imgUrl: doc.data().imgUrl,
           };
           commit("SET_ALBUM_DATA", data);
         }
       });
+    },
+    async getCurrentAlbum({ commit }, payload) {
+      await this.dispatch("GET_ALBUMS");
+      commit("SET_CURRENT_ALBUM", payload);
     },
   },
   modules: {},

@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
+import AlbumView from "../views/AlbumView";
 
 const routes = [
   {
     path: "/",
     name: "Home",
     component: Home,
+  },
+  {
+    path: "/album/:albumId",
+    name: "album",
+    component: AlbumView,
   },
 ];
 

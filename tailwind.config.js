@@ -14,6 +14,8 @@ module.exports = {
       l_purple: "#7c5dfa",
       red: "#ec5757",
       blue: "#252945",
+      violet: "#dfe3fa",
+      green: "#33d69f",
     },
     screens: {
       md: "900px",
