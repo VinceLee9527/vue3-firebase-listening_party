@@ -59,23 +59,37 @@
     <!-- Album Details -->
     <div class="flex flex-col">
       <div class="flex mt-5 bg-d_purple text-white rounded-lg">
-        <div class="flex flex-col p-8">
-          <img class="card-img-top" :src="currentAlbum[0].imgUrl" />
-          <div class="flex items-center">
-            <p class="text-lg font-bold mr-2">Artist:</p>
-            <p>{{ currentAlbum[0].artistName }}</p>
+        <div class="flex flex p-8">
+          <div>
+            <img class="w-96 rounded-md mr-12" :src="currentAlbum[0].imgUrl" />
+            <img
+              class="w-96 rounded-md mr-12"
+              src="@/assets/images/placeholder.png"
+              alt=""
+              v-if="!currentAlbum[0].imgUrl"
+            />
           </div>
-          <div class="flex items-center">
-            <p class="text-lg font-bold mr-2">Artist:</p>
-            <p>{{ currentAlbum[0].artistName }}</p>
-          </div>
-          <div class="flex items-center">
-            <p class="text-lg font-bold mr-2">Artist:</p>
-            <p>{{ currentAlbum[0].artistName }}</p>
-          </div>
-          <div class="flex items-center">
-            <p class="text-lg font-bold mr-2">Artist:</p>
-            <p>{{ currentAlbum[0].artistName }}</p>
+          <div class="flex flex-col justify-evenly">
+            <div class="flex items-center">
+              <p class="text-lg font-bold mr-3">Artist:</p>
+              <p>{{ currentAlbum[0].artistName }}</p>
+            </div>
+            <div class="flex items-center">
+              <p class="text-lg font-bold mr-2">Album:</p>
+              <p>{{ currentAlbum[0].albumName }}</p>
+            </div>
+            <div class="flex items-center">
+              <p class="text-lg font-bold mr-2">Genre:</p>
+              <p>{{ currentAlbum[0].genre }}</p>
+            </div>
+            <div class="flex items-center">
+              <p class="text-lg font-bold mr-2">Release Date:</p>
+              <p>{{ currentAlbum[0].releaseDate }}</p>
+            </div>
+            <div class="flex items-center">
+              <p class="text-lg font-bold mr-2">Rating:</p>
+              <p>{{ currentAlbum[0].ratingTotal }}&#11088;</p>
+            </div>
           </div>
         </div>
       </div>
