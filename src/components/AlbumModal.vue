@@ -19,7 +19,8 @@
       class="relative p-14 max-w-2xl w-full bg-black"
     >
       <Loading v-show="loading" />
-      <h1 v-if="!editInvoice" class="text-2xl font-bold mb-8">New Album</h1>
+      <h1 v-if="!editAlbum" class="text-2xl font-bold mb-8">New Album</h1>
+      <h1 v-else class="text-2xl font-bold mb-8">Edit Album</h1>
       <!-- <h1 v-else>Edit Album</h1> -->
 
       <!-- Bill From -->
@@ -102,6 +103,12 @@
                 />
 
                 <img v-if="imageData" :src="imageData" class="block w-auto" />
+                <img
+                  v-else
+                  class="w-96 rounded-md mr-12"
+                  src="@/assets/images/placeholder.png"
+                  alt=""
+                />
               </div>
             </div>
           </div>
@@ -183,14 +190,6 @@
           <button
             v-if="!editAlbum"
             type="submit"
-            @click="saveDraft"
-            class="button bg-d_purple font-bold"
-          >
-            Save Draft
-          </button>
-          <button
-            v-if="!editAlbum"
-            type="submit"
             @click="publishAlbum"
             class="button bg-l_purple font-bold"
           >
@@ -198,10 +197,11 @@
           </button>
           <button
             v-if="editAlbum"
-            type="sumbit"
-            class="button bg-d_purple font-bold"
+            type="submit"
+            @click="updateAlbum(docId)"
+            class="button bg-l_purple font-bold"
           >
-            Update Invoice
+            Update Album
           </button>
         </div>
       </div>
@@ -211,10 +211,11 @@
 
 <script>
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import { uid } from "uid";
+import { useRoute } from "vue-router";
 import { albumsColRef } from "../firebase/firebaseInit";
-import { addDoc } from "firebase/firestore";
+import { addDoc, updateDoc, doc } from "firebase/firestore";
 import {
   uploadBytes,
   getStorage,
@@ -228,6 +229,7 @@ export default {
   components: { Loading },
   setup() {
     const loading = ref(false);
+    const albumId = ref(null);
     const albumName = ref(null);
     const artistName = ref(null);
     const releaseDate = ref(null);
@@ -242,6 +244,11 @@ export default {
     const image = ref();
     let imgUrl = ref(null);
     let imageData = ref(null);
+    const editAlbum = computed(() => store.getters.editAlbum);
+    const currentAlbum = ref([]);
+    const route = useRoute();
+    const docId = ref(null);
+    const docRef = ref();
 
     const store = useStore();
 
@@ -322,8 +329,71 @@ export default {
       store.dispatch("GET_ALBUMS");
     };
 
+    const albumEditMode = async () => {
+      await getCurrentAlbum();
+      docId.value = currentAlbum.value.docId;
+      albumId.value = currentAlbum.value.albumId;
+      albumName.value = currentAlbum.value.albumName;
+      artistName.value = currentAlbum.value.artistName;
+      releaseDate.value = currentAlbum.value.releaseDate;
+      genre.value = currentAlbum.value.genre;
+      albumRatingList.value = currentAlbum.value.albumRatingList;
+      albumId.value = currentAlbum.value.albumId;
+      imageData.value = currentAlbum.value.imgUrl;
+      imgUrl.value = currentAlbum.value.imgUrl;
+    };
+
+    const updateAlbum = async (id) => {
+      let albumRef = doc(albumsColRef, id);
+      docRef.value = albumRef;
+      if (albumRatingList.value.length <= 0) {
+        alert("Please fill out rating");
+        return;
+      }
+      loading.value = true;
+      calcRatingTotal();
+
+      await updateDoc(docRef.value, {
+        albumName: albumName.value,
+        artistName: artistName.value,
+        releaseDate: releaseDate.value,
+        genre: genre.value,
+        albumPending: true,
+        albumDraft: albumDraft.value,
+        albumDone: false,
+        albumRatingList: albumRatingList.value,
+        ratingTotal: ratingTotal.value,
+        imgUrl: imgUrl.value,
+      });
+      loading.value = false;
+
+      store.commit("CLEAR_ALBUM");
+      store.dispatch("GET_ALBUMS");
+      store.commit("TOGGLE_EDIT_ALBUM");
+    };
+
+    const getCurrentAlbum = async () => {
+      console.log(route.params.albumId);
+      await store.dispatch("getCurrentAlbum", route.params.albumId);
+      currentAlbum.value = store.getters.currentAlbum[0];
+    };
+
+    const submitForm = async () => {
+      if (editAlbum.value === "true") {
+        await updateAlbum();
+
+        store.commit("TOGGLE_ALBUM");
+      } else {
+        uploadAlbum();
+      }
+    };
+
+    watch(() => editAlbum.value === "true", albumEditMode());
+
     return {
       loading,
+      docId,
+      albumId,
       albumName,
       artistName,
       releaseDate,
@@ -343,11 +413,16 @@ export default {
       previewImage,
       albumWrap,
       imgUrl,
+      editAlbum,
+      albumEditMode,
+      currentAlbum,
+      getCurrentAlbum,
+      updateAlbum,
+      submitForm,
       imageInput: () => image.value.click(),
       closeAlbum: () => store.commit("TOGGLE_ALBUM"),
       publishAlbum: () => (albumPending.value = true),
       saveDraft: () => (albumDraft.value = true),
-      submitForm: () => uploadAlbum(),
     };
   },
 };

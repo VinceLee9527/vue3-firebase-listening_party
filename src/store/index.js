@@ -8,14 +8,17 @@ export default createStore({
     albumModal: null,
     modalActive: null,
     currentAlbumArray: null,
+    editAlbum: null,
   },
   getters: {
     albumData(state) {
       return state.albumData;
     },
     currentAlbum(state) {
-      console.log("retrived");
       return state.currentAlbumArray;
+    },
+    editAlbum(state) {
+      return state.editAlbum;
     },
   },
   mutations: {
@@ -27,13 +30,17 @@ export default createStore({
     },
     SET_ALBUM_DATA(state, payload) {
       state.albumData.push(payload);
-      console.log("set");
     },
     SET_CURRENT_ALBUM(state, payload) {
-      console.log("filter");
       state.currentAlbumArray = state.albumData.filter((album) => {
         return album.albumId === payload;
       });
+    },
+    TOGGLE_EDIT_ALBUM(state) {
+      state.editAlbum = !state.editAlbum;
+    },
+    CLEAR_ALBUM(state) {
+      state.albumData = [];
     },
   },
   actions: {

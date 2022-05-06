@@ -30,17 +30,17 @@
         </div>
       </div>
       <div class="flex flex-1 justify-end">
-        <button @click="toggleEditInvoice" class="button bg-blue font-bold">
+        <button @click="toggleEditAlbum" class="button bg-blue font-bold">
           Edit
         </button>
         <button
-          @click="deleteInvoice(currentAlbum[0].docId)"
+          @click="deleteAlbum(currentAlbum[0].docId)"
           class="button bg-red font-bold"
         >
           Delete
         </button>
         <button
-          @click="updateStatusToPaid(currentAlbum[0].docId)"
+          @click="updateStatusToListened(currentAlbum[0].docId)"
           v-if="currentAlbum[0].albumPending"
           class="button bg-green font-bold"
         >
@@ -49,7 +49,7 @@
         <button
           v-if="currentAlbum[0].albumDraft || currentAlbum[0].albumDone"
           @click="updateStatusToPending(currentAlbum[0].docId)"
-          class="orange"
+          class="button bg-orange font-bold"
         >
           Mark as Pending
         </button>
@@ -123,12 +123,15 @@
 
 <script>
 import { useStore } from "vuex";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useRoute } from "vue-router";
+import { updateDoc, doc } from "@firebase/firestore";
+import { albumsColRef } from "../firebase/firebaseInit";
 
 export default {
   name: "albumView",
   setup() {
+    const docRef = ref();
     const store = useStore();
     const route = useRoute();
     const currentAlbum = ref();
@@ -138,15 +141,59 @@ export default {
       currentAlbum.value = store.getters.currentAlbum;
     };
 
+    const toggleEditAlbum = () => {
+      store.commit("TOGGLE_EDIT_ALBUM");
+      store.commit("TOGGLE_ALBUM");
+    };
+
+    const updateStatusToListened = async (id) => {
+      let albumRef = doc(albumsColRef, id);
+      docRef.value = albumRef;
+      await updateDoc(docRef.value, {
+        albumDone: true,
+        albumPending: false,
+      });
+      store.commit("CLEAR_ALBUM");
+      await store.dispatch("GET_ALBUMS");
+      getCurrentAlbum();
+    };
+
+    const updateStatusToPending = async (id) => {
+      let albumRef = doc(albumsColRef, id);
+      docRef.value = albumRef;
+      await updateDoc(docRef.value, {
+        albumDone: false,
+        albumPending: true,
+      });
+      store.commit("CLEAR_ALBUM");
+      await store.dispatch("GET_ALBUMS");
+      getCurrentAlbum();
+    };
+
     watch(
       () => route.params.albumId,
       store.dispatch("getCurrentAlbum", route.params.albumId),
       getCurrentAlbum()
     );
 
+    store.watch(
+      (getters) => getters.editAlbum,
+      async () => {
+        store.commit("CLEAR_ALBUM");
+        await store.dispatch("GET_ALBUMS");
+        getCurrentAlbum();
+      }
+    );
+
+    // watchEffect(() => store.getters.editAlbum, console.log("gang gang"));
+
     return {
       currentAlbum,
       getCurrentAlbum,
+      toggleEditAlbum,
+      updateStatusToListened,
+      updateStatusToPending,
+      editAlbum: computed(() => store.getters.editAlbum),
     };
   },
 };

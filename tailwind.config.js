@@ -4,6 +4,7 @@ module.exports = {
   content: ["./public/**/*.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {},
+
     fontFamily: {
       sans: ["Proxima Nova", ...defaultTheme.fontFamily.sans],
     },
@@ -16,6 +17,7 @@ module.exports = {
       blue: "#252945",
       violet: "#dfe3fa",
       green: "#33d69f",
+      orange: "#ff8f00",
     },
     screens: {
       md: "900px",

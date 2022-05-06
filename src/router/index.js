@@ -8,6 +8,7 @@ const routes = [
     name: "Home",
     component: Home,
   },
+
   {
     path: "/album/:albumId",
     name: "album",
