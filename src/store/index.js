@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { getDocs } from "firebase/firestore";
+import { doc, getDocs, deleteDoc } from "firebase/firestore";
 import { albumsColRef } from "../firebase/firebaseInit";
 
 export default createStore({
@@ -8,7 +8,7 @@ export default createStore({
     albumModal: null,
     modalActive: null,
     currentAlbumArray: null,
-    editAlbum: null,
+    editAlbum: false,
   },
   getters: {
     albumData(state) {
@@ -42,9 +42,14 @@ export default createStore({
     CLEAR_ALBUM(state) {
       state.albumData = [];
     },
+    DELETE_ALBUM(state, payload) {
+      state.albumData = state.albumData.filter((album) => {
+        return album.albumId !== payload;
+      });
+    },
   },
   actions: {
-    async GET_ALBUMS({ commit, state }) {
+    async getAlbums({ commit, state }) {
       let albumsSnapShot = await getDocs(albumsColRef);
       albumsSnapShot.forEach((doc) => {
         if (!state.albumData.some((album) => album.docId === doc.id)) {
@@ -67,8 +72,13 @@ export default createStore({
       });
     },
     async getCurrentAlbum({ commit }, payload) {
-      await this.dispatch("GET_ALBUMS");
+      await this.dispatch("getAlbums");
       commit("SET_CURRENT_ALBUM", payload);
+    },
+    async deleteAlbum({ commit }, payload) {
+      let albumRef = doc(albumsColRef, payload);
+      await deleteDoc(albumRef);
+      commit("DELETE_ALBUM", payload);
     },
   },
   modules: {},

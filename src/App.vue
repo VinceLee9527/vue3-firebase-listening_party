@@ -60,7 +60,7 @@ export default {
       window.addEventListener("resize", checkScreen);
     });
 
-    store.dispatch("GET_ALBUMS");
+    store.dispatch("getAlbums");
 
     return {
       albumModal: computed(() => store.state.albumModal),

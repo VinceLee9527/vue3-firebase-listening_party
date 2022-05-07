@@ -12,6 +12,7 @@
       w-full
       overflow-auto
       md:top-0
+      no-scrollbar
     "
   >
     <form
@@ -188,6 +189,7 @@
         </div>
         <div class="right flex">
           <button
+            :disabled="isDisabled"
             v-if="!editAlbum"
             type="submit"
             @click="publishAlbum"
@@ -196,6 +198,7 @@
             Create Album
           </button>
           <button
+            :disabled="isDisabled"
             v-if="editAlbum"
             type="submit"
             @click="updateAlbum(docId)"
@@ -211,7 +214,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { uid } from "uid";
 import { useRoute } from "vue-router";
 import { albumsColRef } from "../firebase/firebaseInit";
@@ -235,13 +238,13 @@ export default {
     const releaseDate = ref(null);
     const genre = ref(null);
     const albumPending = ref(null);
-    const albumDraft = ref(null);
     const albumDone = ref(null);
     const albumRatingList = ref([]);
     const ratingTotal = ref(0);
     const albumWrap = ref(null);
     const albumCover = ref();
     const image = ref();
+    const isDisabled = ref();
     let imgUrl = ref(null);
     let imageData = ref(null);
     const editAlbum = computed(() => store.getters.editAlbum);
@@ -261,6 +264,7 @@ export default {
     };
 
     const previewImage = async (e) => {
+      isDisabled.value = true;
       const imgId = uid(6);
       imgUrl.value = null;
       const storage = getStorage();
@@ -277,7 +281,7 @@ export default {
       console.log(`Uploaded image`);
 
       imgUrl.value = await getDownloadURL(stRef(storage, imgId));
-      console.log(imgUrl.value);
+      isDisabled.value = false;
     };
 
     const deleteRating = (id) => {
@@ -302,7 +306,7 @@ export default {
       }
     };
 
-    const uploadAlbum = async () => {
+    const publishAlbum = async () => {
       if (albumRatingList.value.length <= 0) {
         alert("Please fill out rating");
         return;
@@ -310,23 +314,21 @@ export default {
       loading.value = true;
       calcRatingTotal();
 
-      const addedDoc = await addDoc(albumsColRef, {
+      await addDoc(albumsColRef, {
         albumId: uid(6),
         albumName: albumName.value,
         artistName: artistName.value,
         releaseDate: releaseDate.value,
         genre: genre.value,
-        albumPending: albumPending.value,
-        albumDraft: albumDraft.value,
+        albumPending: true,
         albumDone: albumDone.value,
         albumRatingList: albumRatingList.value,
         ratingTotal: ratingTotal.value,
         imgUrl: imgUrl.value,
       });
-      console.log(addedDoc);
       loading.value = false;
       store.commit("TOGGLE_ALBUM");
-      store.dispatch("GET_ALBUMS");
+      store.dispatch("getAlbums");
     };
 
     const albumEditMode = async () => {
@@ -359,7 +361,6 @@ export default {
         releaseDate: releaseDate.value,
         genre: genre.value,
         albumPending: true,
-        albumDraft: albumDraft.value,
         albumDone: false,
         albumRatingList: albumRatingList.value,
         ratingTotal: ratingTotal.value,
@@ -368,8 +369,9 @@ export default {
       loading.value = false;
 
       store.commit("CLEAR_ALBUM");
-      store.dispatch("GET_ALBUMS");
+      store.dispatch("getAlbums");
       store.commit("TOGGLE_EDIT_ALBUM");
+      store.commit("TOGGLE_ALBUM");
     };
 
     const getCurrentAlbum = async () => {
@@ -378,17 +380,16 @@ export default {
       currentAlbum.value = store.getters.currentAlbum[0];
     };
 
-    const submitForm = async () => {
+    const submitForm = () => {
       if (editAlbum.value === "true") {
-        await updateAlbum();
-
-        store.commit("TOGGLE_ALBUM");
-      } else {
-        uploadAlbum();
+        updateAlbum();
+      } else if (editAlbum.value === "false") {
+        publishAlbum();
+        console.log("wtf");
       }
     };
 
-    watch(() => editAlbum.value === "true", albumEditMode());
+    store.watch((getters) => getters.editAlbum, albumEditMode());
 
     return {
       loading,
@@ -399,11 +400,9 @@ export default {
       releaseDate,
       genre,
       albumPending,
-      albumDraft,
       albumDone,
       albumRatingList,
       ratingTotal,
-      uploadAlbum,
       calcRatingTotal,
       addRating,
       deleteRating,
@@ -413,6 +412,7 @@ export default {
       previewImage,
       albumWrap,
       imgUrl,
+      isDisabled,
       editAlbum,
       albumEditMode,
       currentAlbum,
@@ -421,8 +421,7 @@ export default {
       submitForm,
       imageInput: () => image.value.click(),
       closeAlbum: () => store.commit("TOGGLE_ALBUM"),
-      publishAlbum: () => (albumPending.value = true),
-      saveDraft: () => (albumDraft.value = true),
+      publishAlbum,
     };
   },
 };

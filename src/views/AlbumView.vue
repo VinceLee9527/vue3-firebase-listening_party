@@ -124,7 +124,7 @@
 <script>
 import { useStore } from "vuex";
 import { ref, watch, computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { updateDoc, doc } from "@firebase/firestore";
 import { albumsColRef } from "../firebase/firebaseInit";
 
@@ -134,6 +134,7 @@ export default {
     const docRef = ref();
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const currentAlbum = ref();
 
     const getCurrentAlbum = async () => {
@@ -154,7 +155,7 @@ export default {
         albumPending: false,
       });
       store.commit("CLEAR_ALBUM");
-      await store.dispatch("GET_ALBUMS");
+      await store.dispatch("getAlbums");
       getCurrentAlbum();
     };
 
@@ -166,8 +167,16 @@ export default {
         albumPending: true,
       });
       store.commit("CLEAR_ALBUM");
-      await store.dispatch("GET_ALBUMS");
+      await store.dispatch("getAlbums");
       getCurrentAlbum();
+    };
+
+    const deleteAlbum = async (id) => {
+      await store.dispatch("deleteAlbum", id);
+      console.log("deleted");
+      store.commit("CLEAR_ALBUM");
+      await store.dispatch("getAlbums");
+      router.push("/");
     };
 
     watch(
@@ -180,12 +189,10 @@ export default {
       (getters) => getters.editAlbum,
       async () => {
         store.commit("CLEAR_ALBUM");
-        await store.dispatch("GET_ALBUMS");
+        await store.dispatch("getAlbums");
         getCurrentAlbum();
       }
     );
-
-    // watchEffect(() => store.getters.editAlbum, console.log("gang gang"));
 
     return {
       currentAlbum,
@@ -193,6 +200,7 @@ export default {
       toggleEditAlbum,
       updateStatusToListened,
       updateStatusToPending,
+      deleteAlbum,
       editAlbum: computed(() => store.getters.editAlbum),
     };
   },
