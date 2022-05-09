@@ -12,6 +12,7 @@
       Go Back
     </router-link>
     <!-- Header -->
+    <Loading v-show="loading" />
     <div class="flex bg-d_purple rounded-xl px-6 py-5">
       <div class="flex items-center">
         <span class="text-violet mr-2">Status</span>
@@ -41,16 +42,22 @@
         </button>
         <button
           @click="updateStatusToListened(currentAlbum[0].docId)"
+          v-show="!loading"
           v-if="currentAlbum[0].albumPending"
-          class="button bg-green font-bold"
+          :disabled="loadingButton"
+          class="button bg-green font-bold relative z-0"
         >
+          <LoadingButton v-show="loadingButton" />
           Mark as Listened
         </button>
         <button
           v-if="currentAlbum[0].albumDraft || currentAlbum[0].albumDone"
+          v-show="!loading"
+          :disabled="loadingButton"
           @click="updateStatusToPending(currentAlbum[0].docId)"
-          class="button bg-orange font-bold"
+          class="button bg-orange font-bold relative"
         >
+          <LoadingButton v-show="loadingButton" />
           Mark as Pending
         </button>
       </div>
@@ -93,30 +100,6 @@
           </div>
         </div>
       </div>
-      <div class="bottom flex flex-column">
-        <div class="billing-items">
-          <div class="heading flex">
-            <p>Item Name</p>
-            <p>QTY</p>
-            <p>Price</p>
-            <p>Total</p>
-          </div>
-          <div
-            v-for="(item, index) in currentAlbum[0].invoiceItemList"
-            :key="index"
-            class="item flex"
-          >
-            <p>{{ item.itemName }}</p>
-            <p>{{ item.qty }}</p>
-            <p>{{ item.price }}</p>
-            <p>{{ item.total }}</p>
-          </div>
-        </div>
-        <div class="total flex">
-          <p>Amount Due</p>
-          <p>{{ currentAlbum[0].invoiceTotal }}</p>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -127,19 +110,30 @@ import { ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { updateDoc, doc } from "@firebase/firestore";
 import { albumsColRef } from "../firebase/firebaseInit";
+import Loading from "../components/LoadingMain.vue";
+import LoadingButton from "../components/LoadingButton.vue";
 
 export default {
   name: "albumView",
+  components: {
+    Loading,
+    LoadingButton,
+  },
   setup() {
     const docRef = ref();
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
     const currentAlbum = ref();
+    const loading = ref(true);
+    const loadingButton = ref(false);
 
     const getCurrentAlbum = async () => {
       await store.dispatch("getCurrentAlbum", route.params.albumId);
       currentAlbum.value = store.getters.currentAlbum;
+      setTimeout(() => {
+        loading.value = false;
+      }, "1500");
     };
 
     const toggleEditAlbum = () => {
@@ -148,6 +142,7 @@ export default {
     };
 
     const updateStatusToListened = async (id) => {
+      loadingButton.value = true;
       let albumRef = doc(albumsColRef, id);
       docRef.value = albumRef;
       await updateDoc(docRef.value, {
@@ -157,9 +152,11 @@ export default {
       store.commit("CLEAR_ALBUM");
       await store.dispatch("getAlbums");
       getCurrentAlbum();
+      loadingButton.value = false;
     };
 
     const updateStatusToPending = async (id) => {
+      loadingButton.value = true;
       let albumRef = doc(albumsColRef, id);
       docRef.value = albumRef;
       await updateDoc(docRef.value, {
@@ -169,6 +166,7 @@ export default {
       store.commit("CLEAR_ALBUM");
       await store.dispatch("getAlbums");
       getCurrentAlbum();
+      loadingButton.value = false;
     };
 
     const deleteAlbum = async (id) => {
@@ -195,6 +193,8 @@ export default {
     );
 
     return {
+      loading,
+      loadingButton,
       currentAlbum,
       getCurrentAlbum,
       toggleEditAlbum,

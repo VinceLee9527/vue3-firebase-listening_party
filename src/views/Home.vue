@@ -24,7 +24,7 @@
           />
           <ul
             v-show="filterMenu"
-            class="filter-menu w-32 absolute top-5 list-none shadow-md"
+            class="filter-menu w-32 absolute top-5 list-none shadow-md bg-black"
           >
             <li
               class="
@@ -103,6 +103,7 @@
       </div>
     </div>
     <!-- Albums -->
+    <Loading v-show="loading" />
     <div v-if="albumData.length > 0">
       <Album
         v-for="(album, index) in filteredData"
@@ -110,7 +111,7 @@
         :key="index"
       />
     </div>
-    <div v-else class="flex flex-col">
+    <div v-if="!loading && albumData.length === 0" class="flex flex-col">
       <img
         class="h-3/12 w-3/12 mx-auto my-12"
         src="@/assets/images/illustration-empty.svg"
@@ -129,19 +130,20 @@
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 import Album from "../components/Album.vue";
+import Loading from "../components/LoadingMain.vue";
 
 export default {
   name: "Home",
   components: {
     Album,
+    Loading,
   },
   setup() {
-    // const loading = ref(false);
+    const loading = ref(true);
     const filterMenu = ref(null);
     const filteredAlbum = ref(null);
     const store = useStore();
     const albumData = computed(() => store.getters.albumData);
-    // const albumData = reactive({ albumDataRef });
 
     const filteredAlbums = (e) => {
       if (e.target.innerText === "Clear Filter") {
@@ -153,20 +155,21 @@ export default {
 
     const filteredData = computed(() => {
       return albumData.value.filter((album) => {
-        if (filteredAlbum.value === "Draft") {
-          return album.albumDraft === true;
-        }
         if (filteredAlbum.value === "Pending") {
           return album.albumPending === true;
-        }
-        if (filteredAlbum.value === "Listened") {
+        } else if (filteredAlbum.value === "Listened") {
           return album.albumDone === true;
         }
+        loading.value = false;
         return album;
       });
     });
+    setTimeout(() => {
+      loading.value = false;
+    }, "1500");
 
     return {
+      loading,
       filterMenu,
       filteredAlbum,
       filteredAlbums,

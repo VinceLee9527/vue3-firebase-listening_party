@@ -19,7 +19,7 @@
       @submit.prevent="submitForm"
       class="relative p-14 max-w-2xl w-full bg-black"
     >
-      <Loading v-show="loading" />
+      <Loading v-show="loading || isDisabled" />
       <h1 v-if="!editAlbum" class="text-2xl font-bold mb-8">New Album</h1>
       <h1 v-else class="text-2xl font-bold mb-8">Edit Album</h1>
       <!-- <h1 v-else>Edit Album</h1> -->
