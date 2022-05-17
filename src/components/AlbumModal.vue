@@ -375,7 +375,6 @@ export default {
     };
 
     const getCurrentAlbum = async () => {
-      console.log(route.params.albumId);
       await store.dispatch("getCurrentAlbum", route.params.albumId);
       currentAlbum.value = store.getters.currentAlbum[0];
     };
