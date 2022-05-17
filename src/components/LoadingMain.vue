@@ -12,7 +12,6 @@
       w-full
       bg-black
       z-[101]
-      border-4
     "
   >
     <span

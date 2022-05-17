@@ -36,18 +36,6 @@
               "
               @click="filteredAlbums"
             >
-              Draft
-            </li>
-            <li
-              class="
-                cursor-pointer
-                text-sm
-                py-2.5
-                px-5
-                hover:bg-white hover:text-d_purple
-              "
-              @click="filteredAlbums"
-            >
               Pending
             </li>
             <li
